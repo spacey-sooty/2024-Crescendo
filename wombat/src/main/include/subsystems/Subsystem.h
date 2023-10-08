@@ -14,9 +14,10 @@ namespace wom {
     virtual void OnStart();
     virtual void OnUpdate(units::second_t dt);
 
-   protected:
     ConfigType _config;
     StateType _state;
+
+   protected:
 
    private:
 

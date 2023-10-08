@@ -1,11 +1,10 @@
 #include "drivetrain/SwerveDrive.h"
 
 // do not touch sub_system unless you know what your doing
-wom::SwerveModule::SwerveModule(wom::Subsystem<wom::SwerveModuleConfig, wom::SwerveModuleState> sub_system, wom::ModuleName name, wom::SwerveModuleConfig config, wom::SwerveModuleState state) : _name(name), _config(config), _state(state) {
-
+wom::SwerveModule::SwerveModule(wom::Subsystem<wom::SwerveModuleConfig, wom::SwerveModuleState> sub_system, wom::ModuleName name, wom::SwerveModuleConfig config, wom::SwerveModuleState state) : _name(name) {
+  sub_system._config = config;
+  sub_system._state = state;
 }
-
-wom::SwerveModule::~SwerveModule() {}
 
 void wom::SwerveModule::OnUpdate(units::second_t dt) {
     switch(_state) {

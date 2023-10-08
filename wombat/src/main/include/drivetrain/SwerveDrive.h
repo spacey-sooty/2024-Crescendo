@@ -23,7 +23,6 @@ namespace wom {
     class SwerveModule : public wom::Subsystem<SwerveModuleConfig, SwerveModuleState>, public behaviour::HasBehaviour {
       public:
           SwerveModule(wom::Subsystem<SwerveModuleConfig, SwerveModuleState> _, wom::ModuleName name, wom::SwerveModuleConfig config, wom::SwerveModuleState state);
-          ~SwerveModule();
 
           void OnStart() override;
           void OnUpdate(units::second_t dt) override;
