@@ -9,7 +9,10 @@
 // we see this done here with the most common usage assigning _config the subsystem's configuration
 // you can also add more logic as you would inside a normal function but that is not normally necessary
 
-Example::Example(ExampleConfig *_config, frc::XboxController &_driver): _config(_config), _driver(_driver) {}
+Example::Example(wom::Subsystem<ExampleConfig, ExampleState> sub_system, ExampleConfig _config, ExampleState _state, frc::XboxController &_driver): _config(_config), _driver(_driver) {
+  sub_system._state = _state;
+  sub_system._config = _config;
+}
 
 // here we have our set state function. inside of the logic all we need to do for a setter is take the variable we want and assign it the 
 // parameters value so they are usually one line functions
@@ -19,7 +22,7 @@ void Example::SetState(ExampleState state) { _state = state; }
 // here we have our get config. inside of the logic all we need to do is return our config variable making getters also quite simple and usually
 // one liners
 
-ExampleConfig *Example::GetConfig() { return _config; }
+ExampleConfig Example::GetConfig() { return _config; }
 
 // here we have our on start function. all this on start function does is print starting to the console when the robot starts but you will often
 // also have to add zeroing and other features
@@ -39,7 +42,7 @@ void Example::OnUpdate(units::second_t dt) {
       break;
     case ExampleState::kRunning:
       double speed = (fabs(_driver.GetLeftY()) > 0.15) ? speed : 0;
-      _config->leftGearbox.transmission->SetVoltage(speed * 1_V);
+      _config.leftGearbox.transmission->SetVoltage(speed * 1_V);
       break;
   }
 }

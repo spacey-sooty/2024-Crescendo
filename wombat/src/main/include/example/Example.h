@@ -8,7 +8,8 @@
 // Wombat includes
 
 #include "behaviour/HasBehaviour.h"
-#include "Gearbox.h"
+#include "subsystems/Subsystem.h"
+#include "utils/Gearbox.h"
 
 // WPILIB includes
 
@@ -53,7 +54,7 @@ enum class ExampleState {
 // classes should be named in upper camel case
 // all subsystems need a class which inherits from the has behaviour class
 
-class Example: public behaviour::HasBehaviour {
+class Example: public behaviour::HasBehaviour, public wom::Subsystem<ExampleConfig, ExampleState> {
  // the public field has data which can be accessed from any instance of the class
 
  public:
@@ -63,7 +64,7 @@ class Example: public behaviour::HasBehaviour {
   // all constructors should have a configuration variable passed in using a pointer as shown below and initialize that configuration to your 
   // _config variable as done is Example.cpp
 
-  Example(ExampleConfig *_config, frc::XboxController &_driver);
+  Example(wom::Subsystem<ExampleConfig, ExampleState> sub_system, ExampleConfig _config, ExampleState _state, frc::XboxController &_driver);
 
   // all classes require a deconstructor which in most cases can just be empty
   // deconstructors are declared the same way as constructors but with a ~ at the front
@@ -87,7 +88,7 @@ class Example: public behaviour::HasBehaviour {
   // all getters names should start with the word get
   // a common getter all subsystems should have is GetConfig which allows you to access the config with instances of the class
 
-  ExampleConfig *GetConfig();
+  ExampleConfig GetConfig();
 
   // setters are functions which set a variables value based on input
   // all setters should start with the word set
@@ -108,7 +109,7 @@ class Example: public behaviour::HasBehaviour {
   // most subsystem private variables are config and state
   // these variables will store the configuration and state of the subsystem and are vital to its functioning
 
-  ExampleConfig *_config;
+  ExampleConfig _config;
   ExampleState _state;
   frc::XboxController &_driver;
 
