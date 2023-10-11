@@ -16,6 +16,7 @@
 #include <variant>
 
 #include "HasBehaviour.h"
+#include "utils/Wrapper.h"
 
 namespace behaviour {
 enum class BehaviourState {
@@ -91,7 +92,7 @@ class Behaviour : public std::enable_shared_from_this<Behaviour> {
    * output, a demand, or some other controlling method. When Behaviours run,
    * only one Behaviour at a time may have control over a system.
    */
-  void Controls(HasBehaviour *sys);
+  void Controls(wom::Wrapper<typename ConfigType, typename StateType> *sys);
 
   /**
    * Inherit controlled systems from another Behaviour.
@@ -157,7 +158,7 @@ class Behaviour : public std::enable_shared_from_this<Behaviour> {
   units::time::second_t       _bhvr_period = 20_ms;
   std::atomic<BehaviourState> _bhvr_state;
 
-  wpi::SmallSet<HasBehaviour *, 8> _bhvr_controls;
+  wpi::SmallSet<wom::Wrapper<typename ConfigType, typename StateType> *, 8> _bhvr_controls;
 
   double                _bhvr_time    = 0;
   units::time::second_t _bhvr_timer   = 0_s;

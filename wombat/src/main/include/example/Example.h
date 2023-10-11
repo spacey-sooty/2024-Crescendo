@@ -8,7 +8,7 @@
 // Wombat includes
 
 #include "behaviour/HasBehaviour.h"
-#include "subsystems/Subsystem.h"
+#include "utils/Subsystem.h"
 #include "utils/Gearbox.h"
 
 // WPILIB includes
