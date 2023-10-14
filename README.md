@@ -1,5 +1,6 @@
 CurtinFRC 2024 Codebase
 ===
+![Build Status of Upstream Master](https://github.com/CurtinFRC/2024-Crescendo/actions/workflows/ci.yml/badge.svg)
 
 # Setup
 ## Linux
