@@ -18,7 +18,7 @@ Fork this repository then open up a terminal and run :
 ```powershell
 git clone https://github.com/_yourusernamehere_/2024-Crescendo.git
 cd 2024-Crescendo
-./init
+.\init
 ```
 Now look in [CONTRIBUTING.md](./CONTRIBUTING.md) before continuing!
 
