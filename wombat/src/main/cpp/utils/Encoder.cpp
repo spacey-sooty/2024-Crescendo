@@ -3,6 +3,8 @@
 
 using namespace wom;
 
+Encoder::Encoder(double encoderTicksPerRotation, double reduction, int type): _reduction(reduction), _type(type), _encoderTicksPerRotation(encoderTicksPerRotation) {}
+
 double Encoder::GetEncoderTicks() const {
   return GetEncoderRawTicks();
 }
