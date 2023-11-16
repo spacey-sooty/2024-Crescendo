@@ -6,8 +6,8 @@ CurtinFRC 2024 Codebase
 
 **This assumes that you have the WPILib tools installed. If you do not, follow the instructions [here](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html).**
 
-## Linux
-=======
+Linux
+-----
 Fork this repository then open up a terminal and run :
 ```bash
 git clone https://github.com/*yourusernamehere*/2024-Crescendo.git
@@ -57,6 +57,6 @@ Clean building is slower so you should not generally use it.
 
 Documentation
 =============
-Our documentation for Wombat and each years codebase can be found [here](TODO!).
+Our documentation for Wombat and each years codebase can be found [here](https://4788-docs.vercel.app/).
 It is a powerful reference for writing code using Wombat going over how to use and the implementation for everything within Wombat.
 It also has a variety of guides to teach you how to use a variety of things in a more fully scoped way.
