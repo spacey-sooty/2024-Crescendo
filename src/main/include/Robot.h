@@ -1,6 +1,7 @@
 #pragma once
 
 #include <frc/TimedRobot.h>
+#include "rerun.hpp"
 
 class Robot : public frc::TimedRobot {
  public:

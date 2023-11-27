@@ -27,5 +27,6 @@ pluginManagement {
 }
 
 include 'wombat'
+include 'rerun'
 rootProject.name = '2024-Crescendo'
 
