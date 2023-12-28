@@ -1,6 +1,14 @@
+// Copyright (c) 2023 CurtinFRC
+// Open Source Software, you can modify it according to the terms
+// of the MIT License at the root of this project
+
 #pragma once
 
 #include <frc/TimedRobot.h>
+#include <frc/event/EventLoop.h>
+
+#include "RobotMap.h"
+#include "drivetrain/SwerveDrive.h"
 
 class Robot : public frc::TimedRobot {
  public:
@@ -14,7 +22,15 @@ class Robot : public frc::TimedRobot {
   void DisabledPeriodic() override;
   void TestInit() override;
   void TestPeriodic() override;
+  void SimulationInit() override;
+  void SimulationPeriodic() override;
 
+ protected:
  private:
+  frc::EventLoop loop;
+  behaviour::BehaviourScheduler *sched;
+  RobotMap                       robotmap;
 
+  wom::vision::Limelight *limelight;
+  wom::drivetrain::Swerve    *swerve;
 };
