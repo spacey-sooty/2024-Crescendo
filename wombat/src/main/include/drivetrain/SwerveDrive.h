@@ -19,6 +19,7 @@
 #include <string>
 
 #include "behaviour/HasBehaviour.h"
+#include "units/length.h"
 #include "utils/Gearbox.h"
 #include "utils/PID.h"
 #include "utils/Util.h"
@@ -64,13 +65,14 @@ namespace drivetrain {
 
     SwerveModuleConfig GetConfig();
     SwerveModuleState  GetState();
+    units::meter_t GetCircumference();
+    units::meters_per_second_t GetSpeed();
 
     void SetState(SwerveModuleState state);
     void SetMovement(units::meter_t distance);
     void SetRotation(units::radian_t rotation);
 
     void                       Log();
-    units::meters_per_second_t GetSpeed();
     void PIDControl(units::second_t dt, units::radian_t rotation, units::meter_t movement);
 
     void OnStart(units::radian_t offset);

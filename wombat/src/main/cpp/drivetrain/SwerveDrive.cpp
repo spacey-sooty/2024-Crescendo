@@ -3,6 +3,7 @@
 // of the MIT License at the root of this project
 
 #include "drivetrain/SwerveDrive.h"
+#include "units/velocity.h"
 
 wom::drivetrain::SwerveModule::SwerveModule(wom::drivetrain::SwerveModuleConfig config,
                                             wom::drivetrain::SwerveModuleState  state)
@@ -70,12 +71,16 @@ void wom::drivetrain::SwerveModule::OnStart(units::radian_t offset) {
   _config.movementGearbox.encoder->SetEncoderPosition(offset);
 }
 
+units::meter_t wom::drivetrain::SwerveModule::GetCircumference() {
+  return _config.wheelRadius.value() * _config.wheelRadius * 3.14;
+}
+
 void wom::drivetrain::SwerveModule::PIDControl(units::second_t dt, units::radian_t rotation,
                                                units::meter_t movement) {
   units::volt_t feedforwardRotationalVelocity = _config.rotationGearbox.motor.Voltage(
       0_Nm, _config.rotationGearbox.encoder->GetEncoderAngularVelocity());
   _rotationalVelocityPID.SetSetpoint(angularVelocity);
-  voltageRotation = _rotationalVelocityPID.Calculate(angularVelocity, dt, feedforwardRotationalVelocity);
+  voltageRotation = _rotationalVelocityPID.Calculate(_config.rotationGearbox.encoder->GetEncoderAngularVelocity(), dt, feedforwardRotationalVelocity);
   if (voltageRotation > 11_V) {
     voltageRotation = 11_V;
   }
@@ -89,7 +94,8 @@ void wom::drivetrain::SwerveModule::PIDControl(units::second_t dt, units::radian
   units::volt_t feedforwardMovementVelocity = _config.movementGearbox.motor.Voltage(
       0_Nm, _config.movementGearbox.encoder->GetEncoderAngularVelocity());
   _movementVelocityPID.SetSetpoint(velocity);
-  voltageMovement = _movementVelocityPID.Calculate(velocity, dt, feedforwardMovementVelocity);
+  auto moved = _config.movementGearbox.encoder->GetEncoderAngularVelocity() * 2 / 1_rad * GetCircumference(); // gives value as fraction of 360
+  voltageMovement = _movementVelocityPID.Calculate(moved, dt, feedforwardMovementVelocity);
   if (voltageMovement > 11_V) {
     voltageMovement = 11_V;
   }
