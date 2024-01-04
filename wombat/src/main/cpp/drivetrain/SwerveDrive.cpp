@@ -89,7 +89,6 @@ void wom::drivetrain::SwerveModule::PIDControl(units::second_t dt, units::radian
     voltageRotation = -voltageRotation;
   }
   _config.rotationGearbox.transmission->SetVoltage(voltageRotation);
-  std::cout << "Rotation Voltage" << voltageRotation.value() << std::endl;
 
   units::volt_t feedforwardMovementVelocity = _config.movementGearbox.motor.Voltage(
       0_Nm, _config.movementGearbox.encoder->GetEncoderAngularVelocity());
@@ -104,7 +103,6 @@ void wom::drivetrain::SwerveModule::PIDControl(units::second_t dt, units::radian
     voltageMovement = -voltageMovement;
   }
   _config.movementGearbox.transmission->SetVoltage(voltageMovement);
-  std::cout << "Movement Voltage" << voltageMovement.value() << std::endl;
 }
 
 units::meters_per_second_t wom::drivetrain::SwerveModule::GetSpeed() {
@@ -178,10 +176,6 @@ void wom::drivetrain::Swerve::FieldRelativeControl(frc::Pose3d desiredPose, unit
 
   units::radian_t rotation = units::math::atan(desiredPose.Y() / desiredPose.X());
 
-  std::cout << "Movement: " << movement.value() << std::endl;
-  std::cout << "Rotation: " << rotation.value() << std::endl;
-  std::cout << "Desired Pose: " << desiredPose.X().value() << ", " << desiredPose.Y().value() << std::endl;
-
   if (rotation > 0_rad) {
     rotation += 45_rad;
   } else {
@@ -213,7 +207,7 @@ void wom::drivetrain::Swerve::OnStart() {
   _config.frontLeft.OnStart(0_rad);
   _config.frontRight.OnStart(0_rad);
   std::cout << "Starting Serve" << std::endl;
-} 
+}
 
 void wom::drivetrain::Swerve::OnUpdate(units::second_t dt) {
   _config.frontRight.OnUpdate(dt);
