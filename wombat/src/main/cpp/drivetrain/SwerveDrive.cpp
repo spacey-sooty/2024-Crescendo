@@ -3,17 +3,34 @@
 // of the MIT License at the root of this project
 
 #include "drivetrain/SwerveDrive.h"
+#include "units/velocity.h"
 
 wom::drivetrain::SwerveModule::SwerveModule(wom::drivetrain::SwerveModuleConfig config,
                                             wom::drivetrain::SwerveModuleState  state)
     : _rotationalVelocityPID(config.path + "/pid/rotationalVelocity", config.rotationalVelocityPID),
       _movementVelocityPID(config.path + "/pid/movementVelocity", config.movementVelocityPID),
-      _rotationalPID(config.path + "/pid/rotationGearbox", config.rotationPID),
-      _movementPID(config.path + "/pid/movementGearbox", config.movementPID),
+      _rotationalPID(config.path + "/pid/rotationGearbox", config.rotationPositionPID),
+      _movementPID(config.path + "/pid/movementGearbox", config.movementPositionPID),
       _config(config),
       _state(state) {
-  // TODO! Get name the table based off module name
-  table = nt::NetworkTableInstance::GetDefault().GetTable("Swerve Module");
+  switch (_config.name) {
+    case wom::drivetrain::SwerveModuleName::FrontLeft:
+      table = nt::NetworkTableInstance::GetDefault().GetTable("Front Left");
+      break;
+    case wom::drivetrain::SwerveModuleName::FrontRight:
+      table = nt::NetworkTableInstance::GetDefault().GetTable("Front Right");
+      break;
+    case wom::drivetrain::SwerveModuleName::BackLeft:
+      table = nt::NetworkTableInstance::GetDefault().GetTable("Back Left");
+      break;
+    case wom::drivetrain::SwerveModuleName::BackRight:
+      table = nt::NetworkTableInstance::GetDefault().GetTable("Back Right");
+      break;
+    default:
+      table = NULL;
+      std::cout << "Invalid Name" << std::endl;
+      break;
+  }
 }
 
 wom::drivetrain::SwerveModuleConfig wom::drivetrain::SwerveModule::GetConfig() {
@@ -54,21 +71,36 @@ void wom::drivetrain::SwerveModule::OnStart(units::radian_t offset) {
   _config.movementGearbox.encoder->SetEncoderPosition(offset);
 }
 
+units::meter_t wom::drivetrain::SwerveModule::GetCircumference() {
+  return _config.wheelRadius.value() * _config.wheelRadius * 3.14;
+}
+
 void wom::drivetrain::SwerveModule::PIDControl(units::second_t dt, units::radian_t rotation,
                                                units::meter_t movement) {
   units::volt_t feedforwardRotationalVelocity = _config.rotationGearbox.motor.Voltage(
       0_Nm, _config.rotationGearbox.encoder->GetEncoderAngularVelocity());
-  voltageRotation = _rotationalVelocityPID.Calculate(angularVelocity, dt, feedforwardRotationalVelocity);
+  _rotationalVelocityPID.SetSetpoint(angularVelocity);
+  voltageRotation = _rotationalVelocityPID.Calculate(_config.rotationGearbox.encoder->GetEncoderAngularVelocity(), dt, feedforwardRotationalVelocity);
   if (voltageRotation > 11_V) {
     voltageRotation = 11_V;
+  }
+
+  if (voltageRotation < 0_V) {
+    voltageRotation = -voltageRotation;
   }
   _config.rotationGearbox.transmission->SetVoltage(voltageRotation);
 
   units::volt_t feedforwardMovementVelocity = _config.movementGearbox.motor.Voltage(
       0_Nm, _config.movementGearbox.encoder->GetEncoderAngularVelocity());
-  voltageMovement = _movementVelocityPID.Calculate(velocity, dt, feedforwardMovementVelocity);
-  if (voltageMovement > 12_V) {
-    voltageMovement = 12_V;
+  _movementVelocityPID.SetSetpoint(velocity);
+  auto moved = _config.movementGearbox.encoder->GetEncoderAngularVelocity() * 2 / 1_rad * GetCircumference();
+  voltageMovement = _movementVelocityPID.Calculate(moved, dt, feedforwardMovementVelocity);
+  if (voltageMovement > 11_V) {
+    voltageMovement = 11_V;
+  }
+
+  if (voltageMovement < 0_V) {
+    voltageMovement = -voltageMovement;
   }
   _config.movementGearbox.transmission->SetVoltage(voltageMovement);
 }
@@ -85,8 +117,15 @@ void wom::drivetrain::SwerveModule::Log() {
   table->GetEntry("Angular Voltage").SetDouble(voltageRotation.value());
 }
 
-void wom::drivetrain::SwerveModule::OnUpdate(units::second_t dt, units::radian_t rotation,
-                                             units::meter_t movement, units::volt_t rotationVoltage) {
+void wom::drivetrain::SwerveModule::SetMovement(units::meter_t _distance) {
+  movement = _distance;
+}
+
+void wom::drivetrain::SwerveModule::SetRotation(units::radian_t _rotation) {
+  rotation = _rotation;
+}
+
+void wom::drivetrain::SwerveModule::OnUpdate(units::second_t dt) {
   Log();
 
   switch (_state) {
@@ -99,7 +138,7 @@ void wom::drivetrain::SwerveModule::OnUpdate(units::second_t dt, units::radian_t
       PIDControl(dt, units::radian_t{180}, units::meter_t{0});
       break;
     case wom::drivetrain::SwerveModuleState::kManualTurn:
-      _config.rotationGearbox.transmission->SetVoltage(rotationVoltage);
+      _config.rotationGearbox.transmission->SetVoltage(0_V);
       break;
     default:
       std::cout << "Invalid State" << std::endl;
@@ -132,28 +171,34 @@ void wom::drivetrain::Swerve::SetState(wom::drivetrain::SwerveState state) {
 }
 
 void wom::drivetrain::Swerve::FieldRelativeControl(frc::Pose3d desiredPose, units::second_t dt) {
-  units::meter_t  movement = units::math::hypot(desiredPose.X(), desiredPose.Y());
-  units::radian_t rotation = units::math::acos(movement / desiredPose.X());
+  units::meter_t  movement = units::math::sqrt((desiredPose.X() * desiredPose.X()) +
+                                               (desiredPose.Y() * desiredPose.Y()));
+
+  units::radian_t rotation = units::math::atan(desiredPose.Y() / desiredPose.X());
 
   if (rotation > 0_rad) {
     rotation += 45_rad;
   } else {
     rotation -= 45_rad;
   }
+  _config.frontLeft.SetRotation(rotation);
+  _config.frontLeft.SetMovement(movement);
   _config.frontLeft.SetState(wom::drivetrain::SwerveModuleState::kPID);
-  _config.frontLeft.OnUpdate(dt, rotation, movement, 0_V);
+  _config.frontRight.SetRotation(rotation);
+  _config.frontRight.SetMovement(movement);
   _config.frontRight.SetState(wom::drivetrain::SwerveModuleState::kPID);
-  _config.frontRight.OnUpdate(dt, rotation, movement, 0_V);
 
   if (rotation > 0_rad) {
     rotation -= 90_rad;
   } else {
     rotation += 90_rad;
   }
+  _config.backLeft.SetRotation(rotation);
+  _config.backLeft.SetMovement(movement);
   _config.backLeft.SetState(wom::drivetrain::SwerveModuleState::kPID);
-  _config.backLeft.OnUpdate(dt, rotation, movement, 0_V);
+  _config.backRight.SetRotation(rotation);
+  _config.backRight.SetMovement(movement);
   _config.backRight.SetState(wom::drivetrain::SwerveModuleState::kPID);
-  _config.backRight.OnUpdate(dt, rotation, movement, 0_V);
 }
 
 void wom::drivetrain::Swerve::OnStart() {
@@ -164,9 +209,11 @@ void wom::drivetrain::Swerve::OnStart() {
   std::cout << "Starting Serve" << std::endl;
 }
 
-void wom::drivetrain::Swerve::OnUpdate(units::second_t dt, wom::vision::Limelight *vision,
-                                       frc::Pose3d desiredPose) {
-  vision->OnUpdate(dt);
+void wom::drivetrain::Swerve::OnUpdate(units::second_t dt) {
+  _config.frontRight.OnUpdate(dt);
+  _config.frontLeft.OnUpdate(dt);
+  _config.backRight.OnUpdate(dt);
+  _config.backLeft.OnUpdate(dt);
 
   switch (_state) {
     case wom::drivetrain::SwerveState::kIdle:
@@ -180,6 +227,10 @@ void wom::drivetrain::Swerve::OnUpdate(units::second_t dt, wom::vision::Limeligh
       std::cout << "Invalid State" << std::endl;
       break;
   }
+}
+
+void wom::drivetrain::Swerve::SetDesired(frc::Pose3d _desiredPose) { //change this naming (from anna)
+  desiredPose = _desiredPose;
 }
 
 void wom::drivetrain::Swerve::RobotRelativeControl(units::second_t dt, units::radian_t desiredDirection,

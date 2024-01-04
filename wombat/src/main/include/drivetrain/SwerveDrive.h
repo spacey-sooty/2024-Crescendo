@@ -19,6 +19,7 @@
 #include <string>
 
 #include "behaviour/HasBehaviour.h"
+#include "units/length.h"
 #include "utils/Gearbox.h"
 #include "utils/PID.h"
 #include "utils/Util.h"
@@ -42,8 +43,8 @@ namespace drivetrain {
     wom::utils::PIDConfig<units::radians_per_second, units::volt> rotationalVelocityPID;
     wom::utils::PIDConfig<units::meters_per_second, units::volt>  movementVelocityPID;
 
-    wom::utils::PIDConfig<units::radian, units::radians_per_second> rotationPID;
-    wom::utils::PIDConfig<units::meter, units::meters_per_second>   movementPID;
+    wom::utils::PIDConfig<units::radian, units::radians_per_second> rotationPositionPID;
+    wom::utils::PIDConfig<units::meter, units::meters_per_second>   movementPositionPID;
 
     units::meter_t wheelRadius;
 
@@ -64,16 +65,18 @@ namespace drivetrain {
 
     SwerveModuleConfig GetConfig();
     SwerveModuleState  GetState();
+    units::meter_t GetCircumference();
+    units::meters_per_second_t GetSpeed();
 
     void SetState(SwerveModuleState state);
+    void SetMovement(units::meter_t distance);
+    void SetRotation(units::radian_t rotation);
 
     void                       Log();
-    units::meters_per_second_t GetSpeed();
     void PIDControl(units::second_t dt, units::radian_t rotation, units::meter_t movement);
 
     void OnStart(units::radian_t offset);
-    void OnUpdate(units::second_t dt, units::radian_t rotation, units::meter_t movement,
-                  units::volt_t rotationVoltage);
+    void OnUpdate(units::second_t dt);
 
    private:
     wom::utils::PIDController<units::radians_per_second, units::volt> _rotationalVelocityPID;
@@ -85,14 +88,17 @@ namespace drivetrain {
     units::volt_t voltageRotation;
     units::volt_t voltageMovement;
 
-    units::meters_per_second_t  velocity;
-    units::radians_per_second_t angularVelocity;
+    units::meters_per_second_t  velocity = 0.25_m / 1_s;
+    units::radians_per_second_t angularVelocity = 90_deg /  1_s;
 
     SwerveModuleConfig _config;
     SwerveModuleState  _state;
 
     std::string                       name;
     std::shared_ptr<nt::NetworkTable> table;
+
+    units::radian_t rotation;
+    units::meter_t movement;
   };
 
   struct SwerveConfig {
@@ -121,11 +127,13 @@ namespace drivetrain {
     Pigeon2                *GetGyro();
 
     void SetState(SwerveState state);
+    void SetDesired(frc::Pose3d _desiredPose);
+
     void FieldRelativeControl(frc::Pose3d desiredPose, units::second_t dt);
     void RobotRelativeControl(units::second_t dt, units::radian_t desiredDirection, units::meter_t magnitude);
 
     void OnStart();
-    void OnUpdate(units::second_t dt, wom::vision::Limelight *vision, frc::Pose3d desiredPose);
+    void OnUpdate(units::second_t dt);
     void OnUpdate(units::second_t dt, Pigeon2 *gyro);
 
    private:
@@ -133,6 +141,7 @@ namespace drivetrain {
     SwerveState             _state;
     wom::vision::Limelight *_vision = NULL;
     Pigeon2                *_gyro   = NULL;
+    frc::Pose3d desiredPose;
   };
 }  // namespace drivetrain
 }  // namespace wom

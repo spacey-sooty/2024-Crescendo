@@ -17,23 +17,23 @@ struct RobotMap {
   };
   Controllers controllers;
 
-  WPI_TalonFX                 frontLeftMovementMotor{9};
+  WPI_TalonFX                 frontLeftMovementMotor{9, "Drivebase"};
   wom::MotorVoltageController frontLeftMovementVoltageController{&frontLeftMovementMotor};
-  wom::CanEncoder             frontLeftMovementEncoder{18};
+  wom::TalonFXEncoder         frontLeftMovementEncoder{&frontLeftMovementMotor};
   wom::Gearbox frontLeftMovement{&frontLeftMovementVoltageController, &frontLeftMovementEncoder,
                                  frc::DCMotor::Falcon500(1).WithReduction(6.75)};
 
-  WPI_TalonFX                 frontLeftRotationMotor{7};
-  wom::MotorVoltageController frontLeftRotationVoltageController{&frontLeftMovementMotor};
+  WPI_TalonFX                 frontLeftRotationMotor{7, "Drivebase"};
+  wom::MotorVoltageController frontLeftRotationVoltageController{&frontLeftRotationMotor};
   wom::CanEncoder             frontLeftRotationEncoder{18};
-  wom::Gearbox frontLeftRotation{&frontLeftMovementVoltageController, &frontLeftMovementEncoder,
+  wom::Gearbox frontLeftRotation{&frontLeftRotationVoltageController, &frontLeftRotationEncoder,
                                  frc::DCMotor::Falcon500(1).WithReduction(6.75)};
 
   wom::SwerveModuleConfig frontLeftConfig{frc::Translation2d{units::meter_t{1}, units::meter_t{1}},
                                           frontLeftMovement,
                                           frontLeftRotation,
-                                          wom::PIDConfig<units::radians_per_second, units::volt>(""),
-                                          wom::PIDConfig<units::meters_per_second, units::volt>(""),
+                                          wom::PIDConfig<units::radians_per_second, units::volt>("", wom::PIDConfig<units::radians_per_second, units::volt>::kp_t{0.5}, wom::PIDConfig<units::radians_per_second, units::volt>::ki_t{0.5}, wom::PIDConfig<units::radians_per_second, units::volt>::kd_t{-0.5}),
+                                          wom::PIDConfig<units::meters_per_second, units::volt>("", wom::PIDConfig<units::meters_per_second, units::volt>::kp_t{0.5}, wom::PIDConfig<units::meters_per_second, units::volt>::ki_t{0.5}, wom::PIDConfig<units::meters_per_second, units::volt>::kd_t{-0.5}),
                                           wom::PIDConfig<units::radian, units::radians_per_second>(""),
                                           wom::PIDConfig<units::meter, units::meters_per_second>(""),
                                           units::meter_t{0.05},
@@ -42,23 +42,23 @@ struct RobotMap {
 
   wom::SwerveModule frontLeft = wom::SwerveModule(frontLeftConfig, wom::SwerveModuleState::kIdle);
 
-  WPI_TalonFX                 frontRightMovementMotor{6};
+  WPI_TalonFX                 frontRightMovementMotor{6, "Drivebase"};
   wom::MotorVoltageController frontRightMovementVoltageController{&frontRightMovementMotor};
-  wom::CanEncoder             frontRightMovementEncoder{16};
+  wom::TalonFXEncoder         frontRightMovementEncoder{&frontRightMovementMotor};
   wom::Gearbox frontRightMovement{&frontRightMovementVoltageController, &frontRightMovementEncoder,
                                   frc::DCMotor::Falcon500(1).WithReduction(6.75)};
 
-  WPI_TalonFX                 frontRightRotationMotor{5};
-  wom::MotorVoltageController frontRightRotationVoltageController{&frontRightMovementMotor};
+  WPI_TalonFX                 frontRightRotationMotor{5, "Drivebase"};
+  wom::MotorVoltageController frontRightRotationVoltageController{&frontRightRotationMotor};
   wom::CanEncoder             frontRightRotationEncoder{16};
-  wom::Gearbox frontRightRotation{&frontRightMovementVoltageController, &frontRightMovementEncoder,
+  wom::Gearbox frontRightRotation{&frontRightRotationVoltageController, &frontRightRotationEncoder,
                                   frc::DCMotor::Falcon500(1).WithReduction(6.75)};
 
   wom::SwerveModuleConfig frontRightConfig{frc::Translation2d{units::meter_t{1}, units::meter_t{1}},
                                            frontLeftMovement,
                                            frontLeftRotation,
-                                           wom::PIDConfig<units::radians_per_second, units::volt>(""),
-                                           wom::PIDConfig<units::meters_per_second, units::volt>(""),
+                                           wom::PIDConfig<units::radians_per_second, units::volt>("", wom::PIDConfig<units::radians_per_second, units::volt>::kp_t{0.5}, wom::PIDConfig<units::radians_per_second, units::volt>::ki_t{0.5}, wom::PIDConfig<units::radians_per_second, units::volt>::kd_t{-0.5}),
+                                           wom::PIDConfig<units::meters_per_second, units::volt>("", wom::PIDConfig<units::meters_per_second, units::volt>::kp_t{0.5}, wom::PIDConfig<units::meters_per_second, units::volt>::ki_t{0.5}, wom::PIDConfig<units::meters_per_second, units::volt>::kd_t{-0.5}),
                                            wom::PIDConfig<units::radian, units::radians_per_second>(""),
                                            wom::PIDConfig<units::meter, units::meters_per_second>(""),
                                            units::meter_t{0.05},
@@ -67,23 +67,23 @@ struct RobotMap {
 
   wom::SwerveModule frontRight = wom::SwerveModule(frontRightConfig, wom::SwerveModuleState::kIdle);
 
-  WPI_TalonFX                 backLeftMovementMotor{2};
+  WPI_TalonFX                 backLeftMovementMotor{2, "Drivebase"};
   wom::MotorVoltageController backLeftMovementVoltageController{&backLeftMovementMotor};
-  wom::CanEncoder             backLeftMovementEncoder{19};
+  wom::TalonFXEncoder         backLeftMovementEncoder{&backLeftMovementMotor};
   wom::Gearbox                backLeftMovement{&backLeftMovementVoltageController, &backLeftMovementEncoder,
                                 frc::DCMotor::Falcon500(1).WithReduction(6.75)};
 
-  WPI_TalonFX                 backLeftRotationMotor{1};
-  wom::MotorVoltageController backLeftRotationVoltageController{&backLeftMovementMotor};
+  WPI_TalonFX                 backLeftRotationMotor{1, "Drivebase"};
+  wom::MotorVoltageController backLeftRotationVoltageController{&backLeftRotationMotor};
   wom::CanEncoder             backLeftRotationEncoder{19};
-  wom::Gearbox                backLeftRotation{&backLeftMovementVoltageController, &backLeftMovementEncoder,
+  wom::Gearbox                backLeftRotation{&backLeftRotationVoltageController, &backLeftRotationEncoder,
                                 frc::DCMotor::Falcon500(1).WithReduction(6.75)};
 
   wom::SwerveModuleConfig backLeftConfig{frc::Translation2d{units::meter_t{1}, units::meter_t{1}},
                                          frontLeftMovement,
                                          frontLeftRotation,
-                                         wom::PIDConfig<units::radians_per_second, units::volt>(""),
-                                         wom::PIDConfig<units::meters_per_second, units::volt>(""),
+                                         wom::PIDConfig<units::radians_per_second, units::volt>("", wom::PIDConfig<units::radians_per_second, units::volt>::kp_t{0.5}, wom::PIDConfig<units::radians_per_second, units::volt>::ki_t{0.5}, wom::PIDConfig<units::radians_per_second, units::volt>::kd_t{-0.5}),
+                                         wom::PIDConfig<units::meters_per_second, units::volt>("", wom::PIDConfig<units::meters_per_second, units::volt>::kp_t{0.5}, wom::PIDConfig<units::meters_per_second, units::volt>::ki_t{0.5}, wom::PIDConfig<units::meters_per_second, units::volt>::kd_t{-0.5}),
                                          wom::PIDConfig<units::radian, units::radians_per_second>(""),
                                          wom::PIDConfig<units::meter, units::meters_per_second>(""),
                                          units::meter_t{0.05},
@@ -92,23 +92,23 @@ struct RobotMap {
 
   wom::SwerveModule backLeft = wom::SwerveModule(backLeftConfig, wom::SwerveModuleState::kIdle);
 
-  WPI_TalonFX                 backRightMovementMotor{4};
+  WPI_TalonFX                 backRightMovementMotor{4, "Drivebase"};
   wom::MotorVoltageController backRightMovementVoltageController{&backRightMovementMotor};
-  wom::CanEncoder             backRightMovementEncoder{17};
+  wom::TalonFXEncoder         backRightMovementEncoder{&backRightMovementMotor};
   wom::Gearbox backRightMovement{&backRightMovementVoltageController, &backRightMovementEncoder,
                                  frc::DCMotor::Falcon500(1).WithReduction(6.75)};
 
-  WPI_TalonFX                 backRightRotationMotor{3};
-  wom::MotorVoltageController backRightRotationVoltageController{&backRightMovementMotor};
+  WPI_TalonFX                 backRightRotationMotor{3, "Drivebase"};
+  wom::MotorVoltageController backRightRotationVoltageController{&backRightRotationMotor};
   wom::CanEncoder             backRightRotationEncoder{17};
-  wom::Gearbox backRightRotation{&backRightMovementVoltageController, &backRightRotationEncoder,
+  wom::Gearbox backRightRotation{&backRightRotationVoltageController, &backRightRotationEncoder,
                                  frc::DCMotor::Falcon500(1).WithReduction(6.75)};
 
   wom::SwerveModuleConfig backRightConfig{frc::Translation2d{units::meter_t{1}, units::meter_t{1}},
                                           frontLeftMovement,
                                           frontLeftRotation,
-                                          wom::PIDConfig<units::radians_per_second, units::volt>(""),
-                                          wom::PIDConfig<units::meters_per_second, units::volt>(""),
+                                          wom::PIDConfig<units::radians_per_second, units::volt>("", wom::PIDConfig<units::radians_per_second, units::volt>::kp_t{0.5}, wom::PIDConfig<units::radians_per_second, units::volt>::ki_t{0.5}, wom::PIDConfig<units::radians_per_second, units::volt>::kd_t{-0.5}),
+                                          wom::PIDConfig<units::meters_per_second, units::volt>("", wom::PIDConfig<units::meters_per_second, units::volt>::kp_t{0.5}, wom::PIDConfig<units::meters_per_second, units::volt>::ki_t{0.5}, wom::PIDConfig<units::meters_per_second, units::volt>::kd_t{-0.5}),
                                           wom::PIDConfig<units::radian, units::radians_per_second>(""),
                                           wom::PIDConfig<units::meter, units::meters_per_second>(""),
                                           units::meter_t{0.05},
@@ -119,6 +119,4 @@ struct RobotMap {
 
   wom::SwerveConfig swerveConfig{frontLeft, frontRight, backLeft, backRight};
 
-  wom::Limelight limelight = wom::Limelight("Limelight");
-  wom::Swerve    swerve    = wom::Swerve(swerveConfig, wom::SwerveState::kIdle, &limelight);
 };
