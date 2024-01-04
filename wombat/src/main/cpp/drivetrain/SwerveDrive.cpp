@@ -94,7 +94,7 @@ void wom::drivetrain::SwerveModule::PIDControl(units::second_t dt, units::radian
   units::volt_t feedforwardMovementVelocity = _config.movementGearbox.motor.Voltage(
       0_Nm, _config.movementGearbox.encoder->GetEncoderAngularVelocity());
   _movementVelocityPID.SetSetpoint(velocity);
-  auto moved = _config.movementGearbox.encoder->GetEncoderAngularVelocity() * 2 / 1_rad * GetCircumference(); // gives value as fraction of 360
+  auto moved = _config.movementGearbox.encoder->GetEncoderAngularVelocity() * 2 / 1_rad * GetCircumference();
   voltageMovement = _movementVelocityPID.Calculate(moved, dt, feedforwardMovementVelocity);
   if (voltageMovement > 11_V) {
     voltageMovement = 11_V;
