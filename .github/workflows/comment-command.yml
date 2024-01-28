@@ -26,7 +26,7 @@ jobs:
       - name: Fetch all history and metadata
         run: |
           git checkout -b pr
-          git branch -f main origin/main
+          git branch -f master origin/master
       - name: Checkout PR
         run: |
           gh pr checkout $NUMBER
