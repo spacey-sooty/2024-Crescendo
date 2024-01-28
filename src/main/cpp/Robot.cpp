@@ -11,12 +11,9 @@
 #include <units/angle.h>
 #include <units/time.h>
 
-
 #include <units/voltage.h>
 
 #include <frc/kinematics/DifferentialDriveKinematics.h>
-
-
 
 #include <frc/controller/RamseteController.h>
 #include <frc/Timer.h>
@@ -24,13 +21,13 @@
 static units::second_t lastPeriodic;
 
 void Robot::RobotInit() {
-          m_chooser.SetDefaultOption("Default Auto", "Default Auto");
+  m_chooser.SetDefaultOption("Default Auto", "Default Auto");
 
   frc::SmartDashboard::PutData("Auto Selector", &m_chooser);
 
   m_path_chooser.SetDefaultOption("Path1", "paths/output/Path1.wpilib.json");
 
-           m_path_chooser.AddOption("Path1", "paths/output/Path1.wpilib.json");
+  m_path_chooser.AddOption("Path1", "paths/output/Path1.wpilib.json");
   m_path_chooser.AddOption("Path2", "paths/output/Path2.wpilib.json");
 
   frc::SmartDashboard::PutData("Path Selector", &m_path_chooser);

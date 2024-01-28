@@ -4,26 +4,6 @@
 
 #pragma once
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #include <frc/DutyCycleEncoder.h>
 #include <frc/Encoder.h>
 #include <rev/CANSparkMax.h>
